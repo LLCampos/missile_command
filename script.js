@@ -55,16 +55,16 @@ var createDune = function(x) {
 
             missiles_y_positions: function() {
                 y_positions = [];
-                y_positions.push(dune_height);
-                y_positions.push(dune_height + 10);
-                y_positions.push(dune_height + 10);
-                y_positions.push(dune_height + 20);
-                y_positions.push(dune_height + 20);
-                y_positions.push(dune_height + 20);
-                y_positions.push(dune_height + 30);
-                y_positions.push(dune_height + 30);
-                y_positions.push(dune_height + 30);
-                y_positions.push(dune_height + 30);
+                y_positions.push(dune_height + 5);
+                y_positions.push(dune_height + 15);
+                y_positions.push(dune_height + 15);
+                y_positions.push(dune_height + 25);
+                y_positions.push(dune_height + 25);
+                y_positions.push(dune_height + 25);
+                y_positions.push(dune_height + 35);
+                y_positions.push(dune_height + 35);
+                y_positions.push(dune_height + 35);
+                y_positions.push(dune_height + 35);
                 return y_positions;
             },
 
@@ -113,10 +113,10 @@ var createMissile = function(x, y) { return {
     y_position: y,
     draw: function() {
         canvas.fillStyle = "blue";
-        canvas.fillRect(this.x_position, this.y_position, 2, 5);
-        canvas.fillRect(this.x_position, this.y_position, 5, 2);
-        canvas.fillRect(this.x_position + 5, this.y_position, 2, 5);
-        canvas.fillRect(this.x_position + 2.5, this.y_position - 5, 2, 5);
+        canvas.fillRect(this.x_position, this.y_position, 1.5, 4);
+        canvas.fillRect(this.x_position, this.y_position, 4, 1.5);
+        canvas.fillRect(this.x_position + 4, this.y_position, 1.5, 4);
+        canvas.fillRect(this.x_position + 2, this.y_position - 4, 1.5, 4);
     },
     };
 };
