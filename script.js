@@ -20,6 +20,7 @@ var dune_height = 460;
 
 var createDune = function(x) {
     return {x_init_position: x,
+            x_position_middle_dune: function() {return this.x_init_position + 50;},
             missiles: [],
             color: "yellow",
 
@@ -106,6 +107,41 @@ var prepareDunes = function() {
 };
 
 
+// decides from which dune the missile will be shoot
+var chooseDune = function(x_coordinate) {
+
+    var dune_shoot_from = false;
+    var dunes_with_missiles = dunes.filter(function(element) {return element.missiles.length > 0;});
+
+    if (dunes_with_missiles.length > 0) {
+
+        if (dunes_with_missiles.length === 1) {
+            dune_shoot_from = dunes_with_missiles[0];
+        } else {
+
+            if (x_coordinate < 140) {
+                dune_shoot_from = dunes_with_missiles[0];
+
+            } else if (x_coordinate < 320) {
+
+                if (dunes[1].missiles.length > 0) {
+                    dune_shoot_from = dunes[1];
+                } else if (x_coordinate < 250) {
+                    dune_shoot_from = dunes_with_missiles[0];
+                } else {
+                    dune_shoot_from = dunes_with_missiles[1];
+                }
+
+            } else {
+                dune_shoot_from = dunes_with_missiles.reverse()[0];
+            }
+        }
+    }
+
+    return dune_shoot_from;
+};
+
+
 // ============== Missiles =========================
 
 var createMissile = function(x, y) { return {
@@ -182,9 +218,21 @@ var launchMissile = function(from_x, to_x, to_y) {
     };
 };
 
+var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
+    dune_shoot_from.missiles.pop();
+    dune_shoot_from.updateMissiles();
 
+    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, y_coordinate);
 
-
+    var timer = setInterval(function() {
+        if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
+            new_launched_missile.clearTrajectory();
+            clearInterval(timer);
+        } else {
+            new_launched_missile.updateTrajectory();
+        }
+    }, 20);
+};
 
 
 createDunes();
@@ -194,38 +242,11 @@ $(c).on('click', function(event) {
     x_coordinate = event.pageX - this.offsetLeft;
     y_coordinate = event.pageY - this.offsetTop;
 
-    var x_dune_position = 0;
-    var dune_shoot_from = "";
+    dune_shoot_from = chooseDune(x_coordinate);
 
-    if (x_coordinate < 140) {
-        x_dune_position = 50;
-        dune_shoot_from = dunes[0];
-    } else if (x_coordinate < 320) {
-        x_dune_position = 230;
-        dune_shoot_from = dunes[1];
-    } else {
-        x_dune_position = 410;
-        dune_shoot_from = dunes[2];
-    }
-
-    if (dune_shoot_from.missiles.length > 0) {
-
-        dune_shoot_from.missiles.pop();
-        dune_shoot_from.updateMissiles();
-
-        var new_launched_missile = launchMissile(x_dune_position, x_coordinate, y_coordinate);
-
-        var timer = setInterval(function() {
-            if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
-                new_launched_missile.clearTrajectory();
-                clearInterval(timer);
-            } else {
-                new_launched_missile.updateTrajectory();
-            }
-        }, 20);
+    if (dune_shoot_from) {
+        shootMissile(dune_shoot_from, x_coordinate, y_coordinate);
     }
 });
-
-
 
 });
