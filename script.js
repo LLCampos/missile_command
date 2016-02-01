@@ -222,6 +222,10 @@ var launchMissile = function(from_x, to_x, to_y) {
 
 var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 
+    if (y_coordinate > 440) {
+        y_coordinate = 440;
+    }
+
     dune_shoot_from.missiles.pop();
     dune_shoot_from.updateMissiles();
 
