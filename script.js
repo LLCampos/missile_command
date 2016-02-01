@@ -3,6 +3,8 @@ $( function() {
 var c = document.getElementById("canvas");
 var canvas = c.getContext("2d");
 
+speed = 20;
+
 // ========== Math ==============
 
 
@@ -219,6 +221,7 @@ var launchMissile = function(from_x, to_x, to_y) {
 };
 
 var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
+
     dune_shoot_from.missiles.pop();
     dune_shoot_from.updateMissiles();
 
@@ -227,13 +230,63 @@ var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
             new_launched_missile.clearTrajectory();
+            createExplosion(x_coordinate, y_coordinate).explosion();
             clearInterval(timer);
         } else {
             new_launched_missile.updateTrajectory();
         }
-    }, 20);
+    }, speed);
 };
 
+
+// ============= EXPLOSIONS ===========================================
+
+var createExplosion = function(x, y) {
+    return {
+        x_coordinate: x,
+        y_coordinate: y,
+        current_radius: 0,
+        max_radius: 20,
+        speed: 1,
+        drawExplosion: function() {
+            canvas.fillStyle = "white";
+            canvas.beginPath();
+            canvas.arc(this.x_coordinate, this.y_coordinate, this.current_radius, 0, 2*Math.PI);
+            canvas.fill();
+        },
+        clearExplosion: function() {
+            canvas.fillStyle = "black";
+            canvas.beginPath();
+            canvas.arc(this.x_coordinate, this.y_coordinate, this.max_radius, 0, 2*Math.PI);
+            canvas.fill();
+        },
+        explosionDiminish: function() {
+            var that = this;
+            var timer = setInterval(function() {
+                if (that.current_radius <= 0) {
+                    clearInterval(timer);
+                } else {
+                    that.clearExplosion();
+                    that.current_radius -= that.speed;
+                    that.drawExplosion();
+                }
+            }, speed);
+        },
+        explosion: function() {
+            var that = this;
+            var timer = setInterval(function() {
+                if (that.current_radius >= that.max_radius) {
+                    clearInterval(timer);
+                    that.explosionDiminish();
+                } else {
+                    that.current_radius += that.speed;
+                    that.drawExplosion();
+                }
+            }, speed);
+        }
+    };
+
+};
 
 createDunes();
 prepareDunes();
