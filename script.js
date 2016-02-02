@@ -73,7 +73,7 @@ var createDune = function(x) {
 
             createMissiles: function() {
                 for (var i = 0; i<10; i++) {
-                    var missile = createMissile(this.missiles_x_positions()[i], this.missiles_y_positions()[i]);
+                    var missile = createUserMissile(this.missiles_x_positions()[i], this.missiles_y_positions()[i]);
                     this.missiles.push(missile);
                 }
             },
@@ -144,9 +144,9 @@ var chooseDune = function(x_coordinate) {
 };
 
 
-// ============== Missiles =========================
+// ============== User Missiles =========================
 
-var createMissile = function(x, y) { return {
+var createUserMissile = function(x, y) { return {
     x_position: x,
     y_position: y,
     draw: function() {
@@ -159,13 +159,13 @@ var createMissile = function(x, y) { return {
     };
 };
 
-// ============= Launched Missiles =====================
+// ============= Launched User Missiles =====================
 
-launchedMissles = [];
+launchedUserMissles = [];
 
 
 
-var launchMissile = function(from_x, to_x, to_y) {
+var launchUserMissile = function(from_x, to_x, to_y) {
     return {
         init_x: from_x,
         init_y: dune_height - 5,
@@ -220,7 +220,7 @@ var launchMissile = function(from_x, to_x, to_y) {
     };
 };
 
-var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
+var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 
     if (y_coordinate > 440) {
         y_coordinate = 440;
@@ -229,7 +229,7 @@ var shootMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
     dune_shoot_from.missiles.pop();
     dune_shoot_from.updateMissiles();
 
-    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, y_coordinate);
+    var new_launched_missile = launchUserMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, y_coordinate);
 
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
@@ -302,7 +302,7 @@ $(c).on('click', function(event) {
     dune_shoot_from = chooseDune(x_coordinate);
 
     if (dune_shoot_from) {
-        shootMissile(dune_shoot_from, x_coordinate, y_coordinate);
+        shootUserMissile(dune_shoot_from, x_coordinate, y_coordinate);
     }
 });
 
