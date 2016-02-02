@@ -165,7 +165,7 @@ launchedUserMissles = [];
 
 
 
-var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_speed) {
+var launchMissile = function(from_x, to_x, from_y, to_y, missile_speed) {
     return {
         init_x: from_x,
         init_y: from_y,
@@ -173,8 +173,6 @@ var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_spee
         destination_y: to_y,
         current_x: from_x,
         current_y: from_y,
-        speed_x: missile_speed,
-        speed_y: (direction == 'up') ? missile_speed : -missile_speed,
         active: true,
 
         total_distance_x: function() {return this.destination_x - this.init_x;},
@@ -186,13 +184,10 @@ var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_spee
             return sign * angle;
         },
 
-        current_distance_x: function() {return this.current_x - this.init_x;},
-        current_distance_y: function() {return this.init_y - this.current_y;},
-        current_trajectory_distance: function() { return Math.sqrt(Math.pow(this.current_distance_x(), 2) + Math.pow(this.current_distance_y(), 2));} ,
+        current_trajectory_distance: 0,
 
         moveMissile: function() {
-            this.current_x += this.speed_x;
-            this.current_y -= this.speed_y;
+            this.current_trajectory_distance += missile_speed;
         },
 
         clearTrajectory: function() {
@@ -200,7 +195,7 @@ var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_spee
             canvas.fillStyle = 'black';
             canvas.translate(this.init_x, this.init_y);
             canvas.rotate(Math.PI + this.angle_trajectory());
-            canvas.fillRect(-1, -1, 3, this.current_trajectory_distance() + 2);
+            canvas.fillRect(-1, -1, 3, this.current_trajectory_distance + 2);
             canvas.restore();
         },
 
@@ -209,7 +204,7 @@ var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_spee
             canvas.fillStyle = 'red';
             canvas.translate(this.init_x, this.init_y);
             canvas.rotate(Math.PI + this.angle_trajectory());
-            canvas.fillRect(0, 0, 1, this.current_trajectory_distance());
+            canvas.fillRect(0, 0, 1, this.current_trajectory_distance);
             canvas.restore();
         },
 
@@ -230,12 +225,14 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
     dune_shoot_from.missiles.pop();
     dune_shoot_from.updateMissiles();
 
-    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 'up', 7);
+    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 7);
 
     var timer = setInterval(function() {
-        if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
+        if (new_launched_missile.current_trajectory_distance > new_launched_missile.total_trajectory_distance()) {
             new_launched_missile.clearTrajectory();
-            createExplosion(x_coordinate, y_coordinate).explosion();
+            new_explosion = createExplosion(x_coordinate, y_coordinate);
+            userExplosions.push(new_explosion);
+            new_explosion.explosion();
             clearInterval(timer);
         } else {
             new_launched_missile.updateTrajectory();
@@ -250,7 +247,7 @@ enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, dune_height, 'down', 1);
+    return launchMissile(init_x, destination_x, 0, dune_height, 1);
 };
 
 shootEnemyMissile = function() {
@@ -267,9 +264,11 @@ updateEnemyMissiles = function() {
 
             missile = enemyMissiles[i];
 
-            if (missile.current_trajectory_distance() > missile.total_trajectory_distance()) {
+            if (missile.current_trajectory_distance > missile.total_trajectory_distance()) {
                 missile.clearTrajectory();
-                createExplosion(missile.destination_x, missile.destination_y).explosion();
+                new_explosion = createExplosion(missile.destination_x, missile.destination_y);
+                enemyExplosions.push(new_explosion);
+                new_explosion.explosion();
                 missile.active = false;
             } else {
                 missile.updateTrajectory();
@@ -288,6 +287,9 @@ launchEnemyMissiles = function(n) {
 
 // ============= EXPLOSIONS ===========================================
 
+userExplosions = [];
+enemyExplosions = [];
+
 var createExplosion = function(x, y) {
     return {
         x_coordinate: x,
@@ -295,6 +297,7 @@ var createExplosion = function(x, y) {
         current_radius: 0,
         max_radius: 20,
         speed: 1,
+        active: true,
         drawExplosion: function() {
             canvas.fillStyle = "white";
             canvas.beginPath();
@@ -312,6 +315,7 @@ var createExplosion = function(x, y) {
             var timer = setInterval(function() {
                 if (that.current_radius <= 0) {
                     clearInterval(timer);
+                    that.active = false;
                 } else {
                     that.clearExplosion();
                     that.current_radius -= that.speed;
@@ -335,10 +339,42 @@ var createExplosion = function(x, y) {
 
 };
 
+updateExplosions = function() {
+    setInterval(function() {
+        userExplosions = userExplosions.filter(function(explosion){return explosion.active;});
+        enemyExplosions = enemyExplosions.filter(function(explosion){return explosion.active;});
+    }, speed);
+};
+
+// =========== Collisions ========================
+
+var checkCollisions = function() {
+    setInterval( function() {
+        checkCollisionUserExplosioneEnemyMissile();
+    }, speed);
+};
+
+var checkCollisionUserExplosioneEnemyMissile = function() {
+    userExplosions.forEach( function(explosion) {
+        var radius = explosion.current_radius;
+        var x = explosion.x_coordinate;
+        var y = explosion.y_coordinate;
+        enemyMissiles.forEach( function(missile) {
+            if (missile.current_x >= x - radius && missile.current_x <= x + radius && missile.current_y >= y - radius && missile.current_y <= y + radius) {
+                console.log('true2');
+            }
+        });
+    });
+};
+
 createDunes();
 prepareDunes();
+
 updateEnemyMissiles();
-launchEnemyMissiles(5);
+updateExplosions();
+checkCollisions();
+
+launchEnemyMissiles(1);
 
 
 
