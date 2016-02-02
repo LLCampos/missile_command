@@ -4,10 +4,8 @@ var c = document.getElementById("canvas");
 var canvas = c.getContext("2d");
 
 speed = 20;
-
-// ========== Math ==============
-
-
+speedEnemyMissiles = 2;
+speedUserMissiles = 7;
 
 // ========= Background =======================
 
@@ -227,7 +225,7 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
     missile_used = dune_shoot_from.missiles.pop();
     dune_shoot_from.eraseMissile(missile_used);
 
-    new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 7);
+    new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, speedUserMissiles);
 
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance > new_launched_missile.total_trajectory_distance()) {
@@ -249,7 +247,7 @@ enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, dune_height, 10);
+    return launchMissile(init_x, destination_x, 0, dune_height, speedEnemyMissiles);
 };
 
 shootEnemyMissile = function() {
