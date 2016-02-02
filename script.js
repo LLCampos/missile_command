@@ -165,16 +165,17 @@ launchedUserMissles = [];
 
 
 
-var launchUserMissile = function(from_x, to_x, to_y) {
+var launchMissile = function(from_x, to_x, from_y, to_y, direction, missile_speed) {
     return {
         init_x: from_x,
-        init_y: dune_height - 5,
+        init_y: from_y,
         destination_x: to_x,
         destination_y: to_y,
         current_x: from_x,
-        current_y: dune_height - 5,
-        speed_x: 7,
-        speed_y: 7,
+        current_y: from_y,
+        speed_x: missile_speed,
+        speed_y: (direction == 'up') ? missile_speed : -missile_speed,
+        active: true,
 
         total_distance_x: function() {return this.destination_x - this.init_x;},
         total_distance_y: function() {return this.init_y - this.destination_y;},
@@ -229,7 +230,7 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
     dune_shoot_from.missiles.pop();
     dune_shoot_from.updateMissiles();
 
-    var new_launched_missile = launchUserMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, y_coordinate);
+    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 'up', 7);
 
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance() > new_launched_missile.total_trajectory_distance()) {
@@ -240,6 +241,48 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
             new_launched_missile.updateTrajectory();
         }
     }, speed);
+};
+
+// ============== Enemy Missiles =====================================
+
+enemyMissiles = [];
+
+var createEnemyMissile = function() {
+    init_x = Math.floor(Math.random() * 500);
+    destination_x = Math.floor(Math.random() * 500);
+    return launchMissile(init_x, destination_x, 0, dune_height, 'down', 1);
+};
+
+shootEnemyMissile = function() {
+    var new_launched_missile = createEnemyMissile();
+    enemyMissiles.push(new_launched_missile);
+};
+
+updateEnemyMissiles = function() {
+    setInterval(function() {
+
+        enemyMissiles = enemyMissiles.filter(function(missile) {return missile.active;});
+
+        for (var i in enemyMissiles) {
+
+            missile = enemyMissiles[i];
+
+            if (missile.current_trajectory_distance() > missile.total_trajectory_distance()) {
+                missile.clearTrajectory();
+                createExplosion(missile.destination_x, missile.destination_y).explosion();
+                missile.active = false;
+            } else {
+                missile.updateTrajectory();
+            }
+        }
+
+    },speed);
+};
+
+launchEnemyMissiles = function(n) {
+    for (var i = 0; i < n; i++) {
+    shootEnemyMissile();
+    }
 };
 
 
@@ -294,6 +337,11 @@ var createExplosion = function(x, y) {
 
 createDunes();
 prepareDunes();
+updateEnemyMissiles();
+launchEnemyMissiles(5);
+
+
+
 
 $(c).on('click', function(event) {
     x_coordinate = event.pageX - this.offsetLeft;
