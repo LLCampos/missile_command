@@ -250,7 +250,7 @@ enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, dune_height, 1);
+    return launchMissile(init_x, destination_x, 0, dune_height, 0.5);
 };
 
 shootEnemyMissile = function() {
@@ -364,7 +364,11 @@ var checkCollisionUserExplosioneEnemyMissile = function() {
         var y = explosion.y_coordinate;
         enemyMissiles.forEach( function(missile) {
             if (missile.current_x() >= x - radius && missile.current_x() <= x + radius && missile.current_y() >= y - radius && missile.current_y() <= y + radius) {
-                console.log('true');
+                missile.clearTrajectory();
+                new_explosion = createExplosion(missile.current_x(), missile.current_y());
+                new_explosion.explosion();
+                userExplosions.push(new_explosion);
+                missile.active = false;
             }
         });
     });
@@ -377,7 +381,7 @@ updateEnemyMissiles();
 updateExplosions();
 checkCollisions();
 
-launchEnemyMissiles(1);
+launchEnemyMissiles(5);
 
 
 
