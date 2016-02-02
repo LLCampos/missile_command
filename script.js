@@ -7,7 +7,7 @@ speed = 20;
 speedEnemyMissiles = 2;
 speedUserMissiles = 7;
 
-// ========= Background =======================
+// ========= Background ==========================
 
 canvas.fillStyle = "#000";
 canvas.fillRect(0,0,500,500);
@@ -140,26 +140,7 @@ var chooseDune = function(x_coordinate) {
     return dune_shoot_from;
 };
 
-
-// ============== User Missiles =========================
-
-var createUserMissile = function(x, y) { return {
-    x_position: x,
-    y_position: y,
-    draw: function(color) {
-        canvas.fillStyle = color;
-        canvas.fillRect(this.x_position, this.y_position, 1.5, 4);
-        canvas.fillRect(this.x_position, this.y_position, 4, 1.5);
-        canvas.fillRect(this.x_position + 4, this.y_position, 1.5, 4);
-        canvas.fillRect(this.x_position + 2, this.y_position - 4, 1.5, 4);
-    },
-    };
-};
-
-// ============= Launched User Missiles =====================
-
-launchedUserMissles = [];
-
+// ============= Missiles ===========================
 
 
 var launchMissile = function(from_x, to_x, from_y, to_y, missile_speed) {
@@ -216,6 +197,22 @@ var launchMissile = function(from_x, to_x, from_y, to_y, missile_speed) {
     };
 };
 
+
+// ============== User Missiles =========================
+
+var createUserMissile = function(x, y) { return {
+    x_position: x,
+    y_position: y,
+    draw: function(color) {
+        canvas.fillStyle = color;
+        canvas.fillRect(this.x_position, this.y_position, 1.5, 4);
+        canvas.fillRect(this.x_position, this.y_position, 4, 1.5);
+        canvas.fillRect(this.x_position + 4, this.y_position, 1.5, 4);
+        canvas.fillRect(this.x_position + 2, this.y_position - 4, 1.5, 4);
+    },
+    };
+};
+
 var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 
     if (y_coordinate > 440) {
@@ -247,7 +244,7 @@ enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, dune_height, speedEnemyMissiles);
+    return launchMissile(init_x, destination_x, 0, floor_height, speedEnemyMissiles);
 };
 
 shootEnemyMissile = function() {
@@ -266,9 +263,18 @@ updateEnemyMissiles = function() {
 
             if (missile.current_trajectory_distance > missile.total_trajectory_distance()) {
                 missile.clearTrajectory();
-                new_explosion = createExplosion(missile.destination_x, missile.destination_y);
+                dune_hitted = checkCollisionWithUserMissiles(missile.destination_x);
+
+                if (dune_hitted) {
+                    new_explosion = createExplosion(dune_hitted.x_position_middle_dune(), dune_height + 5);
+                    dune_hitted.missiles = [];
+                } else {
+                    new_explosion = createExplosion(missile.destination_x, missile.destination_y);
+                }
+
                 enemyExplosions.push(new_explosion);
                 new_explosion.explosion();
+
                 missile.active = false;
             } else {
                 missile.updateTrajectory();
@@ -370,6 +376,19 @@ var checkCollisionUserExplosioneEnemyMissile = function() {
         });
     });
 };
+
+var checkCollisionWithUserMissiles = function(x) {
+    if (x >= dunes[0].x_init_position && x <= dunes[0].x_init_position + 100) {
+        return dunes[0];
+    } else if (x >= dunes[1].x_init_position && x <= dunes[1].x_init_position + 100) {
+        return dunes[1];
+    } else if (x >= dunes[2].x_init_position && x <= dunes[2].x_init_position + 100){
+        return dunes[2];
+    } else {
+        return false;
+    }
+};
+
 
 createDunes();
 prepareDunes();
