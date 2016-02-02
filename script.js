@@ -80,13 +80,12 @@ var createDune = function(x) {
 
             drawMissiles: function() {
                 this.missiles.forEach( function(element) {
-                    element.draw();
+                    element.draw('blue');
                 });
             },
 
-            updateMissiles: function() {
-                this.draw();
-                this.drawMissiles();
+            eraseMissile: function(missile) {
+                missile.draw("yellow");
             },
     };
 };
@@ -149,8 +148,8 @@ var chooseDune = function(x_coordinate) {
 var createUserMissile = function(x, y) { return {
     x_position: x,
     y_position: y,
-    draw: function() {
-        canvas.fillStyle = "blue";
+    draw: function(color) {
+        canvas.fillStyle = color;
         canvas.fillRect(this.x_position, this.y_position, 1.5, 4);
         canvas.fillRect(this.x_position, this.y_position, 4, 1.5);
         canvas.fillRect(this.x_position + 4, this.y_position, 1.5, 4);
@@ -225,10 +224,10 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
         y_coordinate = 440;
     }
 
-    dune_shoot_from.missiles.pop();
-    dune_shoot_from.updateMissiles();
+    missile_used = dune_shoot_from.missiles.pop();
+    dune_shoot_from.eraseMissile(missile_used);
 
-    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 7);
+    new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, 7);
 
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance > new_launched_missile.total_trajectory_distance()) {
@@ -250,7 +249,7 @@ enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, dune_height, 0.5);
+    return launchMissile(init_x, destination_x, 0, dune_height, 10);
 };
 
 shootEnemyMissile = function() {
@@ -283,7 +282,7 @@ updateEnemyMissiles = function() {
 
 launchEnemyMissiles = function(n) {
     for (var i = 0; i < n; i++) {
-    shootEnemyMissile();
+        shootEnemyMissile();
     }
 };
 
