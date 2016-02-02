@@ -171,8 +171,11 @@ var launchMissile = function(from_x, to_x, from_y, to_y, missile_speed) {
         init_y: from_y,
         destination_x: to_x,
         destination_y: to_y,
-        current_x: from_x,
-        current_y: from_y,
+        current_x: function() {
+            angle_with_trajectory = Math.PI/2 - Math.abs(this.angle_trajectory());
+            return this.init_x + (Math.cos(angle_with_trajectory) * this.current_trajectory_distance) * Math.sign(this.angle_trajectory());
+        },
+        current_y: function() {return Math.abs(Math.cos(this.angle_trajectory()) * this.current_trajectory_distance + this.init_y);},
         active: true,
 
         total_distance_x: function() {return this.destination_x - this.init_x;},
@@ -360,8 +363,8 @@ var checkCollisionUserExplosioneEnemyMissile = function() {
         var x = explosion.x_coordinate;
         var y = explosion.y_coordinate;
         enemyMissiles.forEach( function(missile) {
-            if (missile.current_x >= x - radius && missile.current_x <= x + radius && missile.current_y >= y - radius && missile.current_y <= y + radius) {
-                console.log('true2');
+            if (missile.current_x() >= x - radius && missile.current_x() <= x + radius && missile.current_y() >= y - radius && missile.current_y() <= y + radius) {
+                console.log('true');
             }
         });
     });
