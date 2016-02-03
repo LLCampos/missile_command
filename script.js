@@ -155,7 +155,7 @@ var launchMissile = function(from_x, to_x, from_y, to_y, missile_speed) {
             angle_with_trajectory = Math.PI/2 - Math.abs(this.angle_trajectory());
             return this.init_x + (Math.cos(angle_with_trajectory) * this.current_trajectory_distance) * Math.sign(this.angle_trajectory());
         },
-        current_y: function() {return Math.abs(Math.cos(this.angle_trajectory()) * this.current_trajectory_distance + this.init_y);},
+        current_y: function() {return Math.abs(Math.cos(this.angle_trajectory()) * this.current_trajectory_distance) + this.init_y;},
         active: true,
 
         total_distance_x: function() {return this.destination_x - this.init_x;},
@@ -241,12 +241,12 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 
 // ============== Enemy Missiles =====================================
 
-var enemyMissiles = [];
+// enemyMissiles = [];
 
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 23, floor_height, speedEnemyMissiles);
+    return launchMissile(init_x, destination_x, 22, floor_height, speedEnemyMissiles);
 };
 
 var shootEnemyMissile = function() {
@@ -293,6 +293,8 @@ var launchEnemyMissiles = function(n) {
 };
 
 var enemyMissilesLauncher = function() {
+    enemyMissiles = [];
+
     var total_enemy_missiles = 15;
     var enemy_missiles_per_batch = 5;
 
@@ -300,6 +302,9 @@ var enemyMissilesLauncher = function() {
     total_enemy_missiles -= enemy_missiles_per_batch;
 
     var timer = setInterval(function() {
+
+        console.log(enemyMissiles);
+
         launchEnemyMissiles(enemy_missiles_per_batch);
         total_enemy_missiles -= enemy_missiles_per_batch;
         if (total_enemy_missiles <= 0) {
@@ -452,6 +457,7 @@ var startGame = function() {
     updateScoreOnScreen(user);
 
     enemyMissilesLauncher();
+    // launchEnemyMissiles(5);
 
     $(c).on('click', function(event) {
         x_coordinate = event.pageX - this.offsetLeft;
