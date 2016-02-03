@@ -439,6 +439,8 @@ var newScore = {
 
 var updateScoreOnScreen = function(user) {
     setInterval(function() {
+        canvas.fillStyle = "black";
+        canvas.fillRect(100,0,63,21);
         canvas.fillStyle = "red";
         canvas.font = "21px Munro";
         canvas.fillText(user.score, 100, 20);
