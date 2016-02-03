@@ -246,7 +246,7 @@ var enemyMissiles = [];
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
     destination_x = Math.floor(Math.random() * 500);
-    return launchMissile(init_x, destination_x, 0, floor_height, speedEnemyMissiles);
+    return launchMissile(init_x, destination_x, 23, floor_height, speedEnemyMissiles);
 };
 
 var shootEnemyMissile = function() {
@@ -435,8 +435,8 @@ var userScore = function() {
 
 var updateScoreOnScreen = function(score) {
     canvas.fillStyle = "red";
-    canvas.font = "20px Munro";
-    canvas.fillText(score, 90, 20);
+    canvas.font = "21px Munro";
+    canvas.fillText(score, 100, 20);
 };
 
 // ============== Game =====================
