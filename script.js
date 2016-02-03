@@ -405,6 +405,8 @@ var checkCollisionUserExplosioneEnemyMissile = function() {
 };
 
 var checkCollisionWithUserMissiles = function(x) {
+    user.hitByMissile();
+
     if (x >= dunes[0].x_init_position && x <= dunes[0].x_init_position + 100) {
         return dunes[0];
     } else if (x >= dunes[1].x_init_position && x <= dunes[1].x_init_position + 100) {
@@ -450,7 +452,8 @@ var activateStartNewGameButton = function(timer) {
 
 var newScore = function() {return {
     score: 0,
-    hitUserMissile: function() {this.score += 25;}
+    hitUserMissile: function() {this.score += 25;},
+    hitByMissile: function() {if (this.score > 5) {this.score -= 5;} else {this.score = 0;}},
 };
 };
 
