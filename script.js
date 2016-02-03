@@ -4,7 +4,7 @@ var c = document.getElementById("canvas");
 var canvas = c.getContext("2d");
 
 speed = 20;
-speedEnemyMissiles = 2;
+speedEnemyMissiles = 0.5;
 speedUserMissiles = 7;
 
 // ========= Background ==========================
@@ -241,7 +241,7 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 
 // ============== Enemy Missiles =====================================
 
-enemyMissiles = [];
+var enemyMissiles = [];
 
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
@@ -290,6 +290,22 @@ var launchEnemyMissiles = function(n) {
     for (var i = 0; i < n; i++) {
         shootEnemyMissile();
     }
+};
+
+var enemyMissilesLauncher = function() {
+    var total_enemy_missiles = 15;
+    var enemy_missiles_per_batch = 5;
+
+    launchEnemyMissiles(enemy_missiles_per_batch);
+    total_enemy_missiles -= enemy_missiles_per_batch;
+
+    var timer = setInterval(function() {
+        launchEnemyMissiles(enemy_missiles_per_batch);
+        total_enemy_missiles -= enemy_missiles_per_batch;
+        if (total_enemy_missiles <= 0) {
+            clearTimeout(timer);
+        }
+    }, 5000);
 };
 
 
@@ -407,6 +423,22 @@ var detectClickOnButton = function(x,y) {
     }
 };
 
+// ============== Score ====================
+
+var userScore = function() {
+    var score = 0;
+    setInterval(function() {
+        updateScoreOnScreen(score);
+    }, speed);
+
+};
+
+var updateScoreOnScreen = function(score) {
+    canvas.fillStyle = "red";
+    canvas.font = "20px Munro";
+    canvas.fillText(score, 90, 20);
+};
+
 // ============== Game =====================
 
 var startGame = function() {
@@ -418,7 +450,9 @@ var startGame = function() {
     updateExplosions();
     checkCollisions();
 
-    launchEnemyMissiles(5);
+    userScore();
+
+    enemyMissilesLauncher();
 
     $(c).on('click', function(event) {
         x_coordinate = event.pageX - this.offsetLeft;
