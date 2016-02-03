@@ -9,8 +9,10 @@ speedUserMissiles = 7;
 
 // ========= Background ==========================
 
-canvas.fillStyle = "#000";
-canvas.fillRect(0,0,500,500);
+var getBlackScreen = function() {
+    canvas.fillStyle = "#000";
+    canvas.fillRect(0,0,500,500);
+};
 
 // ========= Dunes ===============================
 
@@ -247,12 +249,12 @@ var createEnemyMissile = function() {
     return launchMissile(init_x, destination_x, 0, floor_height, speedEnemyMissiles);
 };
 
-shootEnemyMissile = function() {
+var shootEnemyMissile = function() {
     var new_launched_missile = createEnemyMissile();
     enemyMissiles.push(new_launched_missile);
 };
 
-updateEnemyMissiles = function() {
+var updateEnemyMissiles = function() {
     setInterval(function() {
 
         enemyMissiles = enemyMissiles.filter(function(missile) {return missile.active;});
@@ -284,7 +286,7 @@ updateEnemyMissiles = function() {
     },speed);
 };
 
-launchEnemyMissiles = function(n) {
+var launchEnemyMissiles = function(n) {
     for (var i = 0; i < n; i++) {
         shootEnemyMissile();
     }
@@ -389,28 +391,72 @@ var checkCollisionWithUserMissiles = function(x) {
     }
 };
 
+// ============== Start Game Button ===================
 
-createDunes();
-prepareDunes();
+var start_button_x = 190;
+var start_button_y = 250;
+var start_button_height = 30;
+var start_button_width = 100;
 
-updateEnemyMissiles();
-updateExplosions();
-checkCollisions();
-
-launchEnemyMissiles(5);
-
-
-
-
-$(c).on('click', function(event) {
-    x_coordinate = event.pageX - this.offsetLeft;
-    y_coordinate = event.pageY - this.offsetTop;
-
-    dune_shoot_from = chooseDune(x_coordinate);
-
-    if (dune_shoot_from) {
-        shootUserMissile(dune_shoot_from, x_coordinate, y_coordinate);
+var detectClickOnButton = function(x,y) {
+    if (x >= start_button_x && x <= start_button_x + start_button_width &&
+        y >= start_button_y && y <= start_button_y + start_button_height) {
+        return true;
+    } else {
+        return false;
     }
-});
+};
+
+// ============== Game =====================
+
+var startGame = function() {
+    getBlackScreen();
+    createDunes();
+    prepareDunes();
+
+    updateEnemyMissiles();
+    updateExplosions();
+    checkCollisions();
+
+    launchEnemyMissiles(5);
+
+    $(c).on('click', function(event) {
+        x_coordinate = event.pageX - this.offsetLeft;
+        y_coordinate = event.pageY - this.offsetTop;
+
+        dune_shoot_from = chooseDune(x_coordinate);
+
+        if (dune_shoot_from) {
+            shootUserMissile(dune_shoot_from, x_coordinate, y_coordinate);
+        }
+    });
+};
+
+var startScreen = function() {
+    getBlackScreen();
+    canvas.fillStyle = 'blue';
+    canvas.font = "50px Munro";
+    canvas.fillText("Missile Command", 80, 200);
+
+    canvas.fillStyle = "red";
+    canvas.fillRect(start_button_x, start_button_y, start_button_width, start_button_height);
+
+    canvas.fillStyle = "white";
+    canvas.font = "20px Munro";
+    canvas.fillText("Start Game", 195, 270);
+
+    $(c).on('click', function(event) {
+            x_coordinate = event.pageX - this.offsetLeft;
+            y_coordinate = event.pageY - this.offsetTop;
+
+            if (detectClickOnButton(x_coordinate, y_coordinate)) {
+                    startGame();
+            }
+        }
+    );
+};
+
+startScreen();
+
 
 });
