@@ -425,18 +425,16 @@ var detectClickOnButton = function(x,y) {
 
 // ============== Score ====================
 
-var userScore = function() {
-    var score = 0;
-    setInterval(function() {
-        updateScoreOnScreen(score);
-    }, speed);
-
+var newScore = {
+    score: 0
 };
 
-var updateScoreOnScreen = function(score) {
-    canvas.fillStyle = "red";
-    canvas.font = "21px Munro";
-    canvas.fillText(score, 100, 20);
+var updateScoreOnScreen = function(user) {
+    setInterval(function() {
+        canvas.fillStyle = "red";
+        canvas.font = "21px Munro";
+        canvas.fillText(user.score, 100, 20);
+    }, speed);
 };
 
 // ============== Game =====================
@@ -450,7 +448,8 @@ var startGame = function() {
     updateExplosions();
     checkCollisions();
 
-    userScore();
+    user = newScore;
+    updateScoreOnScreen(user);
 
     enemyMissilesLauncher();
 
