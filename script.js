@@ -395,6 +395,8 @@ var checkCollisionUserExplosioneEnemyMissile = function() {
                 new_explosion.explosion();
                 userExplosions.push(new_explosion);
                 missile.active = false;
+
+                user.hitUserMissile();
             }
         });
     });
@@ -431,7 +433,8 @@ var detectClickOnButton = function(x,y) {
 // ============== Score ====================
 
 var newScore = {
-    score: 0
+    score: 0,
+    hitUserMissile: function() {this.score += 25;}
 };
 
 var updateScoreOnScreen = function(user) {
