@@ -448,20 +448,48 @@ var activateStartNewGameButton = function(timer) {
 
 // ============== Score ====================
 
-var newScore = {
+var newScore = function() {return {
     score: 0,
     hitUserMissile: function() {this.score += 25;}
+};
 };
 
 var updateScoreOnScreen = function(user) {
     updateScoreOnScreenTimer = setInterval(function() {
-        canvas.fillStyle = "black";
-        canvas.fillRect(100,0,63,21);
+        canvas.fillStyle = 'black';
+        canvas.fillRect(100, 0, 150, 21);
         canvas.fillStyle = "red";
         canvas.font = "21px Munro";
-        canvas.fillText(user.score, 100, 20);
+        canvas.fillText("Score: " + user.score, 100, 20);
     }, speed);
 };
+
+var updateHighscoreOnScreen = function(user) {
+    canvas.fillStyle = 'black';
+    canvas.fillRect(300, 0, 150, 21);
+    canvas.fillStyle = "red";
+    canvas.font = "21px Munro";
+    canvas.fillText("Highscore: " + highscore, 300, 20);
+};
+
+var getHighscore = function() {
+
+    highscoreInLocalStorage = localStorage.getItem('highscore');
+
+    if (highscoreInLocalStorage === null || highscoreInLocalStorage === "[object Undefined]") {
+        highscore = 0;
+    } else {
+        highscore = localStorage.getItem('highscore');
+    }
+};
+
+var updateHighscore = function() {
+    if (user.score > highscore) {
+        localStorage.setItem("highscore", user.score.toString());
+    }
+};
+
+
 
 // =========== Over ==========================
 
@@ -499,6 +527,7 @@ var gameOver = function() {
     var timer = setInterval(function() {drawGameOverScreen();}, speed);
     activateStartNewGameButton(timer);
     clearTimers();
+    updateHighscore();
 };
 
 
@@ -513,8 +542,10 @@ var startGame = function() {
     updateExplosions();
     checkCollisions();
 
-    user = newScore;
+    user = newScore();
+    getHighscore();
     updateScoreOnScreen(user);
+    updateHighscoreOnScreen();
 
     enemyMissilesLauncher();
 
