@@ -142,6 +142,16 @@ var chooseDune = function(x_coordinate) {
     return dune_shoot_from;
 };
 
+var totalMissiles = function() {
+    n = 0;
+    dunes.forEach( function(dune) {
+        for (var i in dune.missiles) {
+            n ++;
+        }
+    });
+    return n;
+};
+
 // ============= Missiles ===========================
 
 
@@ -300,8 +310,6 @@ var enemyMissilesLauncher = function() {
     total_enemy_missiles -= enemy_missiles_per_batch;
 
     var timer = setInterval(function() {
-
-        console.log(enemyMissiles);
 
         launchEnemyMissiles(enemy_missiles_per_batch);
         total_enemy_missiles -= enemy_missiles_per_batch;
