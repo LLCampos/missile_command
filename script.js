@@ -263,7 +263,7 @@ var shootEnemyMissile = function() {
 };
 
 var updateEnemyMissiles = function() {
-    setInterval(function() {
+    updateEnemyMissilesTimer = setInterval(function() {
 
         enemyMissiles = enemyMissiles.filter(function(missile) {return missile.active;});
 
@@ -307,14 +307,12 @@ var enemyMissilesLauncher = function() {
 
     launchEnemyMissiles(enemy_missiles_per_batch);
 
-    var timer = setInterval(function() {
+    timerMissilesLaunch = setInterval(function() {
 
         launchEnemyMissiles(enemy_missiles_per_batch);
 
-        if (totalUserMissiles() === 0) {
-            clearTimeout(timer);
-        }
     }, 5000);
+
 };
 
 
@@ -373,7 +371,7 @@ var createExplosion = function(x, y) {
 };
 
 updateExplosions = function() {
-    setInterval(function() {
+    updateExplosionsTimer = setInterval(function() {
         userExplosions = userExplosions.filter(function(explosion){return explosion.active;});
         enemyExplosions = enemyExplosions.filter(function(explosion){return explosion.active;});
     }, speed);
@@ -382,7 +380,7 @@ updateExplosions = function() {
 // =========== Collisions ========================
 
 var checkCollisions = function() {
-    setInterval( function() {
+    checkCollisionsTimer = setInterval( function() {
         checkCollisionUserExplosioneEnemyMissile();
     }, speed);
 };
@@ -456,7 +454,7 @@ var newScore = {
 };
 
 var updateScoreOnScreen = function(user) {
-    setInterval(function() {
+    updateScoreOnScreenTimer = setInterval(function() {
         canvas.fillStyle = "black";
         canvas.fillRect(100,0,63,21);
         canvas.fillStyle = "red";
@@ -489,9 +487,18 @@ var drawGameOverScreen = function() {
     canvas.fillText("New Game", 197, 270);
 };
 
+var clearTimers = function() {
+    clearInterval(timerMissilesLaunch);
+    clearInterval(updateEnemyMissilesTimer);
+    clearInterval(updateExplosionsTimer);
+    clearInterval(checkCollisionsTimer);
+    clearInterval(updateScoreOnScreenTimer);
+};
+
 var gameOver = function() {
     var timer = setInterval(function() {drawGameOverScreen();}, speed);
     activateStartNewGameButton(timer);
+    clearTimers();
 };
 
 
