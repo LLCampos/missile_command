@@ -434,6 +434,20 @@ var detectClickOnButton = function(x,y) {
     }
 };
 
+var activateStartNewGameButton = function(timer) {
+    $(c).on('click', function(event) {
+            x_coordinate = event.pageX - this.offsetLeft;
+            y_coordinate = event.pageY - this.offsetTop;
+
+            if (detectClickOnButton(x_coordinate, y_coordinate)) {
+                    $(c).off('click');
+                    clearInterval(timer);
+                    startGame();
+            }
+        }
+    );
+};
+
 // ============== Score ====================
 
 var newScore = {
@@ -451,6 +465,36 @@ var updateScoreOnScreen = function(user) {
     }, speed);
 };
 
+// =========== Over ==========================
+
+var checkGameOver = function() {
+    var timer = setInterval(function() {
+                    if (totalUserMissiles() === 0) {
+                        clearInterval(timer);
+                        gameOver();
+                    }
+                }, speed);
+};
+
+var drawGameOverScreen = function() {
+    canvas.fillStyle = 'blue';
+    canvas.font = "50px Munro";
+    canvas.fillText("Game Over", 140, 200);
+
+    canvas.fillStyle = "red";
+    canvas.fillRect(start_button_x, start_button_y, start_button_width, start_button_height);
+
+    canvas.fillStyle = "white";
+    canvas.font = "20px Munro";
+    canvas.fillText("New Game", 197, 270);
+};
+
+var gameOver = function() {
+    var timer = setInterval(function() {drawGameOverScreen();}, speed);
+    activateStartNewGameButton(timer);
+};
+
+
 // ============== Game =====================
 
 var startGame = function() {
@@ -466,6 +510,8 @@ var startGame = function() {
     updateScoreOnScreen(user);
 
     enemyMissilesLauncher();
+
+    checkGameOver();
 
     $(c).on('click', function(event) {
         x_coordinate = event.pageX - this.offsetLeft;
@@ -492,16 +538,7 @@ var startScreen = function() {
     canvas.font = "20px Munro";
     canvas.fillText("Start Game", 195, 270);
 
-    $(c).on('click', function(event) {
-            x_coordinate = event.pageX - this.offsetLeft;
-            y_coordinate = event.pageY - this.offsetTop;
-
-            if (detectClickOnButton(x_coordinate, y_coordinate)) {
-                    $(c).off('click');
-                    startGame();
-            }
-        }
-    );
+    activateStartNewGameButton();
 };
 
 startScreen();
