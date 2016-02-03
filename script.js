@@ -221,10 +221,10 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
         y_coordinate = 440;
     }
 
-    missile_used = dune_shoot_from.missiles.pop();
+    var missile_used = dune_shoot_from.missiles.pop();
     dune_shoot_from.eraseMissile(missile_used);
 
-    new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, speedUserMissiles);
+    var new_launched_missile = launchMissile(dune_shoot_from.x_position_middle_dune(), x_coordinate, dune_height - 5, y_coordinate, speedUserMissiles);
 
     var timer = setInterval(function() {
         if (new_launched_missile.current_trajectory_distance > new_launched_missile.total_trajectory_distance()) {
@@ -240,8 +240,6 @@ var shootUserMissile = function(dune_shoot_from, x_coordinate, y_coordinate) {
 };
 
 // ============== Enemy Missiles =====================================
-
-// enemyMissiles = [];
 
 var createEnemyMissile = function() {
     init_x = Math.floor(Math.random() * 500);
