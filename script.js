@@ -418,7 +418,7 @@ var checkCollisionWithUserMissiles = function(x) {
     }
 };
 
-// ============== Start Game Button ===================
+// ============== Game Buttons ===================
 
 var start_button_x = 190;
 var start_button_y = 250;
@@ -583,6 +583,5 @@ var startScreen = function() {
 };
 
 startScreen();
-
 
 });
