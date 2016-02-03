@@ -494,6 +494,7 @@ var startScreen = function() {
             y_coordinate = event.pageY - this.offsetTop;
 
             if (detectClickOnButton(x_coordinate, y_coordinate)) {
+                    $(c).off('click');
                     startGame();
             }
         }
