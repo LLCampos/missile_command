@@ -4,7 +4,7 @@ var c = document.getElementById("canvas");
 var canvas = c.getContext("2d");
 
 speed = 20;
-speedEnemyMissiles = 0.5;
+speedEnemyMissiles = 1;
 speedUserMissiles = 7;
 
 // ========= Background ==========================
@@ -142,7 +142,7 @@ var chooseDune = function(x_coordinate) {
     return dune_shoot_from;
 };
 
-var totalMissiles = function() {
+var totalUserMissiles = function() {
     n = 0;
     dunes.forEach( function(dune) {
         for (var i in dune.missiles) {
@@ -303,17 +303,15 @@ var launchEnemyMissiles = function(n) {
 var enemyMissilesLauncher = function() {
     enemyMissiles = [];
 
-    var total_enemy_missiles = 15;
     var enemy_missiles_per_batch = 5;
 
     launchEnemyMissiles(enemy_missiles_per_batch);
-    total_enemy_missiles -= enemy_missiles_per_batch;
 
     var timer = setInterval(function() {
 
         launchEnemyMissiles(enemy_missiles_per_batch);
-        total_enemy_missiles -= enemy_missiles_per_batch;
-        if (total_enemy_missiles <= 0) {
+
+        if (totalUserMissiles() === 0) {
             clearTimeout(timer);
         }
     }, 5000);
@@ -468,7 +466,6 @@ var startGame = function() {
     updateScoreOnScreen(user);
 
     enemyMissilesLauncher();
-    // launchEnemyMissiles(5);
 
     $(c).on('click', function(event) {
         x_coordinate = event.pageX - this.offsetLeft;
