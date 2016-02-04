@@ -457,14 +457,12 @@ var newScore = function() {return {
 };
 };
 
-var updateScoreOnScreen = function(user) {
-    updateScoreOnScreenTimer = setInterval(function() {
-        canvas.fillStyle = 'black';
-        canvas.fillRect(100, 0, 150, 21);
-        canvas.fillStyle = "red";
-        canvas.font = "21px Munro";
-        canvas.fillText("Score: " + user.score, 100, 20);
-    }, speed);
+var updateCurrentScoreOnScreen = function(user) {
+    canvas.fillStyle = 'black';
+    canvas.fillRect(100, 0, 150, 21);
+    canvas.fillStyle = "red";
+    canvas.font = "21px Munro";
+    canvas.fillText("Score: " + user.score, 100, 20);
 };
 
 var updateHighscoreOnScreen = function(user) {
@@ -473,6 +471,13 @@ var updateHighscoreOnScreen = function(user) {
     canvas.fillStyle = "red";
     canvas.font = "21px Munro";
     canvas.fillText("Highscore: " + highscore, 300, 20);
+};
+
+var updateScoresOnScreen = function(user) {
+    updateScoresOnScreenTimer = setInterval(function() {
+        updateCurrentScoreOnScreen(user);
+        updateHighscoreOnScreen();
+    }, speed);
 };
 
 var getHighscore = function() {
@@ -523,7 +528,7 @@ var clearTimers = function() {
     clearInterval(updateEnemyMissilesTimer);
     clearInterval(updateExplosionsTimer);
     clearInterval(checkCollisionsTimer);
-    clearInterval(updateScoreOnScreenTimer);
+    clearInterval(updateScoresOnScreenTimer);
 };
 
 var gameOver = function() {
@@ -547,8 +552,7 @@ var startGame = function() {
 
     user = newScore();
     getHighscore();
-    updateScoreOnScreen(user);
-    updateHighscoreOnScreen();
+    updateScoresOnScreen(user);
 
     enemyMissilesLauncher();
 
