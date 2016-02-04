@@ -582,6 +582,13 @@ var startScreen = function() {
     activateStartNewGameButton();
 };
 
-startScreen();
+var loadFont = function() {
+    canvas.fillStyle = 'white';
+    canvas.font = "50px Munro";
+    canvas.fillText("", 0, 0);
+};
+
+loadFont();
+setTimeout(startScreen, 200);
 
 });
